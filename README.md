@@ -142,16 +142,16 @@ vehicle_current_status
 
 ### Meter Readings (Charger Telemetry)
 
-| Method | Endpoint                  | Description                                 |
-| ------ | ------------------------- | ------------------------------------------- |
-| POST   | `/meter-readings`         | Ingest a single meter reading               |
+| Method | Endpoint                 | Description                                 |
+| ------ | ------------------------ | ------------------------------------------- |
+| POST   | `/meter-readings`        | Ingest a single meter reading               |
 | GET    | `/meter-readings/status` | Get all chargers' current status (hot path) |
 
 ### Vehicle Readings (Vehicle Telemetry)
 
-| Method | Endpoint                    | Description                                 |
-| ------ | --------------------------- | ------------------------------------------- |
-| POST   | `/vehicle-readings`         | Ingest a single vehicle reading             |
+| Method | Endpoint                   | Description                                 |
+| ------ | -------------------------- | ------------------------------------------- |
+| POST   | `/vehicle-readings`        | Ingest a single vehicle reading             |
 | GET    | `/vehicle-readings/status` | Get all vehicles' current status (hot path) |
 
 ### Analytics
@@ -187,8 +187,8 @@ vehicle_current_status
 ### 1. Start the Database
 
 ```bash
-cd docker
-docker compose up -d
+cd api
+docker compose -f docker/docker-compose.yml up -d
 ```
 
 This starts:
@@ -199,7 +199,6 @@ This starts:
 ### 2. Install Dependencies
 
 ```bash
-cd api
 npm install
 ```
 
@@ -291,6 +290,6 @@ api/
 │   │   └── analytics.service.ts
 │   └── config/
 │       └── typeorm.config.ts
-└── docker/
-    └── docker-compose.yml
+├── docker/
+    └── docker-compose.yml       # PostgreSQL + pgAdmin
 ```
