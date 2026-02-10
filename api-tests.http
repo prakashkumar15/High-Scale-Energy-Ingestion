@@ -1,0 +1,90 @@
+### Energy Ingestion Engine API Test Suite
+# Use the REST Client extension in VS Code to run these requests
+# SPEC: Polymorphic Ingestion + Hot/Cold Separation + Analytical Endpoint
+
+@baseUrl = http://localhost:3000
+
+#####################
+# METER STREAM INGESTION
+# Spec: { meterId, kwhConsumedAc, voltage, timestamp }
+#####################
+
+### 1. POST - Ingest meter telemetry (dual-write: HOT + COLD)
+POST {{baseUrl}}/meter-readings
+Content-Type: application/json
+
+{
+  "meterId": "MTR-101",
+  "kwhConsumedAc": 12.4,
+  "voltage": 230,
+  "timestamp": "2026-02-09T10:01:00Z"
+}
+
+### 2. GET - Current charger status (HOT data - fast dashboard)
+GET {{baseUrl}}/meter-readings/status
+
+#####################
+# VEHICLE STREAM INGESTION
+# Spec: { vehicleId, soc, kwhDeliveredDc, batteryTemp, timestamp }
+#####################
+
+### 3. POST - Ingest vehicle telemetry (dual-write: HOT + COLD)
+POST {{baseUrl}}/vehicle-readings
+Content-Type: application/json
+
+{
+  "vehicleId": "EV-501",
+  "chargerId": "MTR-101",
+  "soc": 64,
+  "kwhDeliveredDc": 10.8,
+  "batteryTemp": 36.5,
+  "timestamp": "2026-02-09T10:01:00Z"
+}
+
+### 4. GET - Current vehicle status (HOT data - fast dashboard)
+GET {{baseUrl}}/vehicle-readings/status
+
+#####################
+# ANALYTICS
+# Spec Requirement D: 24h Performance Summary per Vehicle
+#####################
+
+### 5. GET - Vehicle performance analytics (last 24 hours)
+GET {{baseUrl}}/analytics/performance/EV-501
+
+#####################
+# COMPLETE WORKFLOW TEST
+#####################
+
+### STEP 1: Send meter telemetry
+POST {{baseUrl}}/meter-readings
+Content-Type: application/json
+
+{
+  "meterId": "MTR-999",
+  "kwhConsumedAc": 5.0,
+  "voltage": 230,
+  "timestamp": "2026-02-09T12:00:00Z"
+}
+
+### STEP 2: Send vehicle telemetry
+POST {{baseUrl}}/vehicle-readings
+Content-Type: application/json
+
+{
+  "vehicleId": "EV-999",
+  "chargerId": "MTR-999",
+  "soc": 50,
+  "kwhDeliveredDc": 4.5,
+  "batteryTemp": 35.0,
+  "timestamp": "2026-02-09T12:00:00Z"
+}
+
+### STEP 3: Check current statuses (HOT data)
+GET {{baseUrl}}/meter-readings/status
+
+###
+GET {{baseUrl}}/vehicle-readings/status
+
+### STEP 4: Get vehicle performance (24h summary)
+GET {{baseUrl}}/analytics/performance/EV-999
